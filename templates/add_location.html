@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Add Location - Car Rental Management{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card modern-card shadow-lg border-0">
+                <div class="card-header text-white border-0" style="background: linear-gradient(135deg, #4834d4, #686de0); padding: 1rem 1.5rem;">
+                    <h5 class="mb-0 d-flex align-items-center">
+                        <div class="icon-wrapper me-3" style="width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        Add New Location
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="location_id" class="form-label">Location ID</label>
+                                <input type="number" class="form-control" id="location_id" name="location_id" placeholder="e.g., 5001" required>
+                                <small class="text-muted">Enter a unique location ID</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="branch_id" class="form-label">Branch</label>
+                                <select class="form-control" id="branch_id" name="branch_id" required>
+                                    <option value="">Select Branch</option>
+                                    {% for branch in branches %}
+                                    <option value="{{ branch.BranchId }}">{{ branch.BranchName }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Full Address</label>
+                            <textarea class="form-control" id="address" name="address" rows="2" placeholder="e.g., 123 Main Street" required></textarea>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="is_pickup" name="is_pickup" value="1" checked>
+                                    <label class="form-check-label" for="is_pickup">
+                                        <i class="fas fa-arrow-up text-success"></i> Is Pickup Point
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="is_dropoff" name="is_dropoff" value="1" checked>
+                                    <label class="form-check-label" for="is_dropoff">
+                                        <i class="fas fa-arrow-down text-danger"></i> Is Dropoff Point
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>Note:</strong> This location will be available for pickup and/or dropoff based on your selection.
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('locations') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to Locations
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Add Location
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.modern-card { border-radius: 15px; overflow: hidden; }
+.form-label { font-weight: 600; color: #2c3e50; margin-bottom: 0.5rem; }
+.form-control { border: 1px solid #e1e5e9; border-radius: 8px; padding: 0.75rem; transition: all 0.3s ease; }
+.form-control:focus { border-color: #4834d4; box-shadow: 0 0 0 0.2rem rgba(72, 52, 212, 0.25); }
+.btn { border-radius: 8px; padding: 0.75rem 1.5rem; font-weight: 500; transition: all 0.3s ease; }
+.btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+.btn-primary { background: linear-gradient(135deg, #4834d4, #686de0); border: none; }
+.btn-primary:hover { background: linear-gradient(135deg, #3d2ab5, #5a5fc7); }
+.alert { border-radius: 8px; border: none; background: rgba(23, 162, 184, 0.1); border-left: 4px solid #17a2b8; }
+.form-check-input:checked { background-color: #4834d4; border-color: #4834d4; }
+</style>
+{% endblock %}

@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}Locations - Car Rental Management{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-map-marker-alt text-primary"></i> Location Management</h2>
+        <a href="{{ url_for('add_location') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add New Location
+        </a>
+    </div>
+
+    <div class="card modern-card shadow-lg border-0">
+        <div class="card-header text-white border-0" style="background: linear-gradient(135deg, #4834d4 0%, #686de0 100%); padding: 1rem 1.5rem;">
+            <h5 class="mb-0">
+                <i class="fas fa-list"></i> All Locations 
+                {% if locations %}({{ locations|length }}){% endif %}
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            {% if locations %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Location ID</th>
+                            <th>Branch ID</th>
+                            <th>Address</th>
+                            <th>Pickup Point</th>
+                            <th>Dropoff Point</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for location in locations %}
+                        <tr>
+                            <td><span class="badge bg-primary">{{ location.LocationID }}</span></td>
+                            <td><span class="badge bg-info">{{ location.BranchID }}</span></td>
+                            <td><strong>{{ location.Address }}</strong></td>
+                            <td>
+                                {% if location.IsPickupPoint == 1 %}
+                                    <span class="badge bg-success">✓ YES</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">✗ NO</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if location.IsDropoffPoint == 1 %}
+                                    <span class="badge bg-success">✓ YES</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">✗ NO</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ url_for('edit_location', location_id=location.LocationID) }}" class="btn btn-sm btn-outline-warning me-2">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                <a href="{{ url_for('delete_location', location_id=location.LocationID) }}" 
+                                   class="btn btn-sm btn-outline-danger" 
+                                   onclick="return confirm('Are you sure you want to delete this location?')">
+                                    <i class="fas fa-trash"></i> Delete
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-map-marker-alt fa-4x text-muted mb-3"></i>
+                <h5 class="text-muted">No locations found</h5>
+                <p class="text-muted">Start by adding your first location.</p>
+                <a href="{{ url_for('add_location') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add First Location
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+}
+.modern-card {
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+.modern-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15) !important;
+}
+.table th {
+    font-weight: 600;
+    color: #2c3e50;
+    border-bottom: 2px solid #e9ecef;
+    background: #f8f9fa !important;
+    padding: 1rem 0.75rem;
+}
+.table td {
+    vertical-align: middle;
+    padding: 1rem 0.75rem;
+    border-bottom: 1px solid #e9ecef;
+}
+.table tbody tr:hover {
+    background-color: rgba(72, 52, 212, 0.05);
+    transition: all 0.3s ease;
+}
+.badge {
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    font-weight: 500;
+}
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+.btn-sm {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    border-radius: 6px;
+}
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.btn-primary {
+    background: linear-gradient(135deg, #4834d4 0%, #686de0 100%);
+    border: none;
+    padding: 0.75rem 1.5rem;
+}
+.btn-primary:hover {
+    background: linear-gradient(135deg, #3d2ab5 0%, #5a5fc7 100%);
+}
+</style>
+{% endblock %}

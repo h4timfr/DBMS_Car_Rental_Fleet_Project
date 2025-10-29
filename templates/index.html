@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Car Rental Management{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <!-- Welcome Header -->
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1 class="display-4">
+                <i class="fas fa-car text-primary"></i> Welcome to Car Rental Management System
+            </h1>
+            <p class="lead text-muted">Manage your car rental business efficiently and professionally</p>
+        </div>
+    </div>
+
+    <!-- First Row: Dashboard, Branches, Map -->
+    <div class="row">
+        <!-- Dashboard Card -->
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card modern-card shadow-lg border-0" style="background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);">
+                <div class="card-body text-center text-white p-4">
+                    <div class="icon-wrapper mb-3" style="width: 70px; height: 70px; margin: 0 auto; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-tachometer-alt fa-2x"></i>
+                    </div>
+                    <h4 class="mb-2">Dashboard</h4>
+                    <p class="mb-3">View key metrics, analytics and business overview</p>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-light">
+                        <i class="fas fa-arrow-right"></i> Go to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Manage Branches Card -->
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card modern-card shadow-lg border-0" style="background: linear-gradient(135deg, #28a745 0%, #218838 100%);">
+                <div class="card-body text-center text-white p-4">
+                    <div class="icon-wrapper mb-3" style="width: 70px; height: 70px; margin: 0 auto; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-building fa-2x"></i>
+                    </div>
+                    <h4 class="mb-2">Manage Branches</h4>
+                    <p class="mb-3">Add, edit and manage all branch locations</p>
+                    <a href="{{ url_for('branches') }}" class="btn btn-light">
+                        <i class="fas fa-building"></i> Manage Branches
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- View Map Card - TOP RIGHT -->
+        <div class="col-md-6 col-lg-4 mb-4">
+            <a href="{{ url_for('map_view') }}" class="text-decoration-none">
+                <div class="card modern-card shadow-lg border-0 hover-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); transition: all 0.3s ease;">
+                    <div class="card-body text-center text-white p-4">
+                        <div class="icon-wrapper mb-3" style="width: 70px; height: 70px; margin: 0 auto; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-map-marked-alt fa-2x"></i>
+                        </div>
+                        <h4 class="mb-2">View Map</h4>
+                        <p class="mb-3">Branch Locations</p>
+                        <div class="btn btn-light">
+                            <i class="fas fa-map"></i> Open Map
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Second Row: Customers, Cars, Reservations -->
+    <div class="row">
+        <!-- Customer Management Card -->
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card modern-card shadow-lg border-0" style="background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);">
+                <div class="card-body text-center text-white p-4">
+                    <div class="icon-wrapper mb-3" style="width: 70px; height: 70px; margin: 0 auto; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-users fa-2x"></i>
+                    </div>
+                    <h4 class="mb-2">Customer Management</h4>
+                    <p class="mb-3">Handle customer information and profiles</p>
+                    <a href="{{ url_for('customers') }}" class="btn btn-light">
+                        <i class="fas fa-users"></i> Manage Customers
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Car Fleet Card -->
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card modern-card shadow-lg border-0" style="background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);">
+                <div class="card-body text-center text-white p-4">
+                    <div class="icon-wrapper mb-3" style="width: 70px; height: 70px; margin: 0 auto; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-car fa-2x"></i>
+                    </div>
+                    <h4 class="mb-2">Car Fleet</h4>
+                    <p class="mb-3">Manage your car inventory and availability</p>
+                    <a href="{{ url_for('cars') }}" class="btn btn-light">
+                        <i class="fas fa-car"></i> Manage Cars
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reservations Card -->
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card modern-card shadow-lg border-0" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);">
+                <div class="card-body text-center text-white p-4">
+                    <div class="icon-wrapper mb-3" style="width: 70px; height: 70px; margin: 0 auto; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-calendar fa-2x"></i>
+                    </div>
+                    <h4 class="mb-2">Reservations</h4>
+                    <p class="mb-3">Handle booking requests and reservations</p>
+                    <a href="{{ url_for('reservations') }}" class="btn btn-light">
+                        <i class="fas fa-calendar"></i> View Reservations
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+}
+
+.modern-card {
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.modern-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2) !important;
+}
+
+.hover-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(102, 126, 234, 0.4) !important;
+}
+
+.icon-wrapper {
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { 
+        transform: translateY(0px); 
+    }
+    50% { 
+        transform: translateY(-10px); 
+    }
+}
+
+.btn {
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.btn-light {
+    background: white;
+    color: #333;
+}
+
+.display-4 {
+    font-weight: 700;
+}
+
+.lead {
+    font-size: 1.1rem;
+}
+
+/* Ensure consistent card height */
+.card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 280px;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,1168 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Car Rental Management{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+    }
+    
+    .metric-card {
+        border-radius: 15px !important;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .metric-card:hover {
+        transform: translateY(-5px) !important;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2) !important;
+    }
+    
+    .metric-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+        pointer-events: none;
+    }
+    
+    .icon-circle {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(10px);
+    }
+    
+    .display-4 {
+        font-size: 2.5rem !important;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .text-white-50 {
+        color: rgba(255,255,255,0.7) !important;
+    }
+    
+    .text-white-75 {
+        color: rgba(255,255,255,0.8) !important;
+    }
+    
+    .progress {
+        background: rgba(255,255,255,0.2) !important;
+        border-radius: 10px;
+    }
+    
+    .progress-bar {
+        background: rgba(255,255,255,0.8) !important;
+        border-radius: 10px;
+        transition: width 0.6s ease;
+    }
+    
+    .card {
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        border: none;
+        margin-bottom: 20px;
+    }
+    
+    .shadow-lg {
+        box-shadow: 0 1rem 3rem rgba(0,0,0,0.175) !important;
+    }
+    .modern-card {
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.modern-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15) !important;
+}
+
+.gradient-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 1rem 1.5rem;
+}
+
+.gradient-header-alt {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    padding: 1rem 1.5rem;
+}
+
+.icon-wrapper {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+}
+
+.activity-placeholder {
+    padding: 2rem 1rem;
+}
+
+.animated-chart {
+    display: flex;
+    justify-content: center;
+    align-items: end;
+    height: 120px;
+}
+
+.chart-bars {
+    display: flex;
+    align-items: end;
+    gap: 8px;
+    height: 100%;
+}
+
+.bar {
+    width: 20px;
+    background: linear-gradient(to top, #667eea, #764ba2);
+    border-radius: 3px;
+    animation: barGrow 2s ease-in-out infinite alternate;
+    opacity: 0.8;
+}
+
+.bar:nth-child(1) { animation-delay: 0s; }
+.bar:nth-child(2) { animation-delay: 0.2s; }
+.bar:nth-child(3) { animation-delay: 0.4s; }
+.bar:nth-child(4) { animation-delay: 0.6s; }
+.bar:nth-child(5) { animation-delay: 0.8s; }
+.bar:nth-child(6) { animation-delay: 1s; }
+
+@keyframes barGrow {
+    0% { transform: scaleY(0.7); }
+    100% { transform: scaleY(1); }
+}
+
+.notification-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    border-left: 4px solid;
+}
+
+.notification-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.success-notification {
+    background: rgba(40, 167, 69, 0.1);
+    border-left-color: #28a745;
+}
+
+.info-notification {
+    background: rgba(23, 162, 184, 0.1);
+    border-left-color: #17a2b8;
+}
+
+.warning-notification {
+    background: rgba(255, 193, 7, 0.1);
+    border-left-color: #ffc107;
+}
+
+.notification-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    font-size: 1.2rem;
+}
+
+.success-notification .notification-icon {
+    background: rgba(40, 167, 69, 0.2);
+    color: #28a745;
+}
+
+.info-notification .notification-icon {
+    background: rgba(23, 162, 184, 0.2);
+    color: #17a2b8;
+}
+
+.warning-notification .notification-icon {
+    background: rgba(255, 193, 7, 0.2);
+    color: #ffc107;
+}
+
+.notification-content {
+    flex: 1;
+}
+
+.notification-content h6 {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.notification-time {
+    text-align: right;
+}
+
+.badge {
+    border-radius: 20px;
+    font-weight: 500;
+}
+.quick-actions-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 1.5rem;
+}
+
+.action-card {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0,0,0,0.05);
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.action-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    transition: all 0.3s ease;
+}
+
+.primary-action::before {
+    background: linear-gradient(90deg, #007bff, #0056b3);
+}
+
+.success-action::before {
+    background: linear-gradient(90deg, #28a745, #1e7e34);
+}
+
+.warning-action::before {
+    background: linear-gradient(90deg, #ffc107, #e0a800);
+}
+
+.info-action::before {
+    background: linear-gradient(90deg, #17a2b8, #117a8b);
+}
+
+.action-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+}
+
+.action-card:hover::before {
+    height: 100%;
+    opacity: 0.05;
+}
+
+.action-link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.action-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-right: 1rem;
+    transition: all 0.3s ease;
+}
+
+.primary-action .action-icon {
+    background: rgba(0, 123, 255, 0.1);
+    color: #007bff;
+}
+
+.success-action .action-icon {
+    background: rgba(40, 167, 69, 0.1);
+    color: #28a745;
+}
+
+.warning-action .action-icon {
+    background: rgba(255, 193, 7, 0.1);
+    color: #ffc107;
+}
+
+.info-action .action-icon {
+    background: rgba(23, 162, 184, 0.1);
+    color: #17a2b8;
+}
+
+.action-content {
+    flex: 1;
+}
+
+.action-title {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: #2c3e50;
+}
+
+.action-desc {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-bottom: 0;
+}
+
+.action-arrow {
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: all 0.3s ease;
+    color: #6c757d;
+}
+
+.action-card:hover .action-arrow {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.action-card:hover .action-icon {
+    transform: scale(1.1);
+}
+
+.secondary-actions {
+    padding: 1.5rem;
+    background: rgba(248, 249, 250, 0.5);
+    border-radius: 12px;
+    border: 1px dashed rgba(0,0,0,0.1);
+}
+
+.btn-light-primary {
+    background: rgba(0, 123, 255, 0.1);
+    color: #007bff;
+    border: 1px solid rgba(0, 123, 255, 0.2);
+}
+
+.btn-light-success {
+    background: rgba(40, 167, 69, 0.1);
+    color: #28a745;
+    border: 1px solid rgba(40, 167, 69, 0.2);
+}
+
+.btn-light-warning {
+    background: rgba(255, 193, 7, 0.1);
+    color: #ffc107;
+    border: 1px solid rgba(255, 193, 7, 0.2);
+}
+
+.btn-light-info {
+    background: rgba(23, 162, 184, 0.1);
+    color: #17a2b8;
+    border: 1px solid rgba(23, 162, 184, 0.2);
+}
+
+.btn-light-primary:hover,
+.btn-light-success:hover,
+.btn-light-warning:hover,
+.btn-light-info:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.activity-card {
+    border-radius: 20px;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.activity-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.activity-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    opacity: 0.3;
+}
+
+.activity-header-icon {
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.activity-pulse {
+    display: flex;
+    align-items: center;
+}
+
+.pulse-dot {
+    width: 10px;
+    height: 10px;
+    background: #00ff88;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.6);
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.7; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.activity-timeline {
+    position: relative;
+    max-height: 500px;
+    overflow-y: auto;
+    padding: 0;
+}
+
+.activity-timeline::-webkit-scrollbar {
+    width: 6px;
+}
+
+.activity-timeline::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.activity-timeline::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 10px;
+}
+
+.activity-item {
+    position: relative;
+    display: flex;
+    padding: 0;
+    opacity: 0;
+    animation: slideInActivity 0.6s ease forwards;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-item:hover .activity-card-item {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+    transform: translateX(5px);
+}
+
+.activity-timeline-dot {
+    position: relative;
+    min-width: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 1.5rem;
+}
+
+.activity-timeline-dot::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: -10px;
+    width: 2px;
+    background: linear-gradient(to bottom, #e9ecef, rgba(233, 236, 239, 0.3));
+    transform: translateX(-50%);
+}
+
+.activity-item:last-child .activity-timeline-dot::before {
+    background: linear-gradient(to bottom, #e9ecef 0%, #e9ecef 50%, transparent 100%);
+}
+
+.activity-icon-wrapper {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    position: relative;
+    z-index: 2;
+    border: 3px solid #fff;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.activity-success {
+    background: linear-gradient(135deg, #00c851, #00a843);
+    color: white;
+}
+
+.activity-warning {
+    background: linear-gradient(135deg, #ffbb33, #ff8800);
+    color: white;
+}
+
+.activity-info {
+    background: linear-gradient(135deg, #33b5e5, #0099cc);
+    color: white;
+}
+
+.activity-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.activity-card-item {
+    padding: 1.5rem;
+    margin: 0.5rem 1rem 0.5rem 0;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.activity-title {
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.activity-metadata {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.activity-type-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.activity-type-reservation {
+    background: linear-gradient(135deg, #ff6b9d, #c44569);
+    color: white;
+}
+
+.activity-type-rental {
+    background: linear-gradient(135deg, #4834d4, #686de0);
+    color: white;
+}
+
+.activity-type-payment {
+    background: linear-gradient(135deg, #00a085, #00d2d3);
+    color: white;
+}
+
+.activity-type-customer {
+    background: linear-gradient(135deg, #ff9ff3, #f368e0);
+    color: white;
+}
+
+.activity-time {
+    color: #6c757d;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+}
+
+.activity-status-badge {
+    margin-left: auto;
+}
+
+.status-indicator {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+}
+
+.status-success {
+    background: rgba(0, 200, 81, 0.1);
+    color: #00c851;
+}
+
+.status-warning {
+    background: rgba(255, 187, 51, 0.1);
+    color: #ffbb33;
+}
+
+.status-info {
+    background: rgba(51, 181, 229, 0.1);
+    color: #33b5e5;
+}
+
+/* Beautiful Footer Actions */
+.activity-footer {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 2rem 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.action-card {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background: white;
+    border-radius: 15px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.action-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: all 0.6s ease;
+}
+
+.action-card:hover::before {
+    left: 100%;
+}
+
+.action-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    text-decoration: none;
+    color: inherit;
+}
+
+.action-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-right: 1rem;
+}
+
+.action-reservations .action-icon {
+    background: linear-gradient(135deg, #ff6b9d, #c44569);
+    color: white;
+}
+
+.action-rentals .action-icon {
+    background: linear-gradient(135deg, #4834d4, #686de0);
+    color: white;
+}
+
+.action-payments .action-icon {
+    background: linear-gradient(135deg, #00a085, #00d2d3);
+    color: white;
+}
+
+.action-customers .action-icon {
+    background: linear-gradient(135deg, #ff9ff3, #f368e0);
+    color: white;
+}
+
+.action-content {
+    flex: 1;
+}
+
+.action-title {
+    display: block;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.25rem;
+}
+
+.action-subtitle {
+    display: block;
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.action-arrow {
+    color: #6c757d;
+    transition: all 0.3s ease;
+}
+
+.action-card:hover .action-arrow {
+    transform: translateX(5px);
+    color: #2c3e50;
+}
+
+/* Beautiful Empty State */
+.activity-empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.empty-animation {
+    margin-bottom: 2rem;
+}
+
+.empty-clock {
+    width: 100px;
+    height: 100px;
+    border: 4px solid #e9ecef;
+    border-radius: 50%;
+    position: relative;
+    margin: 0 auto 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: #6c757d;
+    animation: clockTick 2s infinite;
+}
+
+.clock-hands {
+    position: absolute;
+}
+
+.hour-hand, .minute-hand {
+    position: absolute;
+    background: #6c757d;
+    border-radius: 2px;
+    transform-origin: bottom center;
+}
+
+.hour-hand {
+    width: 3px;
+    height: 25px;
+    top: -25px;
+    left: -1.5px;
+    animation: rotateHour 12s infinite linear;
+}
+
+.minute-hand {
+    width: 2px;
+    height: 35px;
+    top: -35px;
+    left: -1px;
+    animation: rotateMinute 1s infinite linear;
+}
+
+.empty-title {
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.empty-description {
+    color: #6c757d;
+    margin-bottom: 2rem;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@keyframes slideInActivity {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes clockTick {
+    0%, 50%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-5deg); }
+    75% { transform: rotate(5deg); }
+}
+
+@keyframes rotateHour {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes rotateMinute {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .activity-timeline-dot {
+        min-width: 60px;
+    }
+    
+    .activity-card-item {
+        margin-right: 0;
+        padding: 1rem;
+    }
+    
+    .activity-metadata {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .action-card {
+        padding: 0.75rem 1rem;
+        text-align: center;
+        flex-direction: column;
+    }
+    
+    .action-icon {
+        margin-right: 0;
+        margin-bottom: 0.5rem;
+    }
+}
+</style>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-tachometer-alt text-primary"></i> Business Dashboard</h2>
+    <div class="text-muted">
+    <i class="fas fa-calendar"></i> Business Overview
+</div>
+</div>
+
+<!-- Key Metrics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3 col-sm-6 mb-4">
+        <div class="card metric-card shadow-lg border-0 h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); transform: translateY(0); transition: all 0.3s ease;">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-subtitle mb-2 text-white-50 text-uppercase small font-weight-bold">Total Cars</h6>
+                        <h1 class="display-4 mb-0 text-white font-weight-bold">{{ total_cars }}</h1>
+                        <small class="text-white-75 font-weight-light">In Fleet</small>
+                    </div>
+                    <div class="text-right">
+                        <div class="icon-circle">
+                            <i class="fas fa-car fa-2x text-white opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="progress mt-3" style="height: 4px;">
+                    <div class="progress-bar bg-white" role="progressbar" style="width: 75%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 col-sm-6 mb-4">
+        <div class="card metric-card shadow-lg border-0 h-100" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); transform: translateY(0); transition: all 0.3s ease;">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-subtitle mb-2 text-white-50 text-uppercase small font-weight-bold">Total Customers</h6>
+                        <h1 class="display-4 mb-0 text-white font-weight-bold">{{ total_customers }}</h1>
+                        <small class="text-white-75 font-weight-light">Registered</small>
+                    </div>
+                    <div class="text-right">
+                        <div class="icon-circle">
+                            <i class="fas fa-users fa-2x text-white opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="progress mt-3" style="height: 4px;">
+                    <div class="progress-bar bg-white" role="progressbar" style="width: 60%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 col-sm-6 mb-4">
+        <div class="card metric-card shadow-lg border-0 h-100" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); transform: translateY(0); transition: all 0.3s ease;">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-subtitle mb-2 text-white-50 text-uppercase small font-weight-bold">Active Rentals</h6>
+                        <h1 class="display-4 mb-0 text-white font-weight-bold">{{ active_rentals }}</h1>
+                        <small class="text-white-75 font-weight-light">Currently Out</small>
+                    </div>
+                    <div class="text-right">
+                        <div class="icon-circle">
+                            <i class="fas fa-key fa-2x text-white opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="progress mt-3" style="height: 4px;">
+                    <div class="progress-bar bg-white" role="progressbar" style="width: 45%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 col-sm-6 mb-4">
+        <div class="card metric-card shadow-lg border-0 h-100" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); transform: translateY(0); transition: all 0.3s ease;">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-subtitle mb-2 text-white-50 text-uppercase small font-weight-bold">Total Revenue</h6>
+                        <h1 class="display-4 mb-0 text-white font-weight-bold">₹{{ "{:,.0f}".format(total_revenue) }}</h1>
+                        <small class="text-white-75 font-weight-light">All Time</small>
+                    </div>
+                    <div class="text-right">
+                        <div class="icon-circle">
+                            <i class="fas fa-money-bill fa-2x text-white opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="progress mt-3" style="height: 4px;">
+                    <div class="progress-bar bg-white" role="progressbar" style="width: 85%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts and Tables Row -->
+<div class="row">
+    <div class="row mt-4">
+    <div class="col-12">
+        <div class="card modern-card activity-card shadow-lg border-0">
+            <div class="card-header activity-header text-white border-0">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <div class="activity-header-icon">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <div class="ms-3">
+                            <h5 class="mb-0 fw-bold">Recent Activity</h5>
+                            <small class="opacity-75">Live updates from your system</small>
+                        </div>
+                    </div>
+                    <div class="activity-pulse">
+                        <div class="pulse-dot"></div>
+                        <span class="ms-2 small">Live</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                {% if recent_activities %}
+                <div class="activity-timeline">
+                    {% for activity in recent_activities %}
+                    <div class="activity-item">
+                        <div class="activity-timeline-dot">
+                            <div class="activity-icon-wrapper activity-{{ activity.status }}">
+                                {% if activity.activity_type == 'Reservation' %}
+                                    <i class="fas fa-calendar-check"></i>
+                                {% elif activity.activity_type == 'Rental' %}
+                                    <i class="fas fa-car"></i>
+                                {% elif activity.activity_type == 'Payment' %}
+                                    <i class="fas fa-credit-card"></i>
+                                {% else %}
+                                    <i class="fas fa-user-plus"></i>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-card-item">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="activity-info">
+                                        <h6 class="activity-title mb-1">{{ activity.description }}</h6>
+                                        <div class="activity-metadata">
+                                            <span class="activity-type-badge activity-type-{{ activity.activity_type.lower() }}">
+                                                {{ activity.activity_type }}
+                                            </span>
+                                            <span class="activity-time">
+                                                <i class="fas fa-clock me-1"></i>
+                                                {% if activity.activity_date %}
+                                                    {{ activity.activity_date.strftime('%b %d, %Y at %I:%M %p') }}
+                                                {% else %}
+                                                    Unknown time
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="activity-status-badge">
+                                        <span class="status-indicator status-{{ activity.status }}">
+                                            {% if activity.status == 'success' %}
+                                                <i class="fas fa-check-circle"></i>
+                                            {% elif activity.status == 'warning' %}
+                                                <i class="fas fa-exclamation-triangle"></i>
+                                            {% elif activity.status == 'info' %}
+                                                <i class="fas fa-info-circle"></i>
+                                            {% else %}
+                                                <i class="fas fa-circle"></i>
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Beautiful Action Footer -->
+                <div class="activity-footer">
+                    <div class="container-fluid">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <a href="{{ url_for('reservations') }}" class="action-card action-reservations">
+                                    <div class="action-icon">
+                                        <i class="fas fa-calendar-alt"></i>
+                                    </div>
+                                    <div class="action-content">
+                                        <span class="action-title">Reservations</span>
+                                        <span class="action-subtitle">Manage bookings</span>
+                                    </div>
+                                    <i class="fas fa-arrow-right action-arrow"></i>
+                                </a>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="{{ url_for('rentals') }}" class="action-card action-rentals">
+                                    <div class="action-icon">
+                                        <i class="fas fa-key"></i>
+                                    </div>
+                                    <div class="action-content">
+                                        <span class="action-title">Rentals</span>
+                                        <span class="action-subtitle">Active rentals</span>
+                                    </div>
+                                    <i class="fas fa-arrow-right action-arrow"></i>
+                                </a>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="{{ url_for('payments') }}" class="action-card action-payments">
+                                    <div class="action-icon">
+                                        <i class="fas fa-credit-card"></i>
+                                    </div>
+                                    <div class="action-content">
+                                        <span class="action-title">Payments</span>
+                                        <span class="action-subtitle">Financial records</span>
+                                    </div>
+                                    <i class="fas fa-arrow-right action-arrow"></i>
+                                </a>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="{{ url_for('customers') }}" class="action-card action-customers">
+                                    <div class="action-icon">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <div class="action-content">
+                                        <span class="action-title">Customers</span>
+                                        <span class="action-subtitle">Client database</span>
+                                    </div>
+                                    <i class="fas fa-arrow-right action-arrow"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <!-- Beautiful Empty State -->
+                <div class="activity-empty-state">
+                    <div class="empty-animation">
+                        <div class="empty-clock">
+                            <i class="fas fa-clock"></i>
+                            <div class="clock-hands">
+                                <div class="hour-hand"></div>
+                                <div class="minute-hand"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <h5 class="empty-title">No recent activity</h5>
+                    <p class="empty-description">Activities will appear here as you use the system</p>
+                    <div class="empty-actions">
+                        <a href="{{ url_for('add_reservation') }}" class="btn btn-primary btn-sm me-2">
+                            <i class="fas fa-plus"></i> Create Reservation
+                        </a>
+                        <a href="{{ url_for('add_rental') }}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-car"></i> New Rental
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+    
+    <div class="col-lg-6 mb-4">
+        <div class="card modern-card shadow-lg border-0 h-100">
+            <div class="card-header gradient-header-alt text-white border-0">
+                <h5 class="mb-0 d-flex align-items-center">
+                    <div class="icon-wrapper me-3">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    System Notifications
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="notification-item success-notification mb-3">
+                    <div class="notification-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="notification-content">
+                        <h6 class="mb-1">Database Status</h6>
+                        <p class="mb-0 small">Connected and running smoothly</p>
+                    </div>
+                    <div class="notification-time">
+                        <small class="text-muted">Now</small>
+                    </div>
+                </div>
+                
+                <div class="notification-item info-notification mb-3">
+                    <div class="notification-icon">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <div class="notification-content">
+                        <h6 class="mb-1">System Status</h6>
+                        <p class="mb-0 small">All systems operational</p>
+                    </div>
+                    <div class="notification-time">
+                        <small class="text-muted">2 min</small>
+                    </div>
+                </div>
+                
+                <div class="notification-item warning-notification mb-3">
+                    <div class="notification-icon">
+                        <i class="fas fa-car"></i>
+                    </div>
+                    <div class="notification-content">
+                        <h6 class="mb-1">Active Rentals</h6>
+                        <p class="mb-0 small">{{ active_rentals }} vehicles currently rented</p>
+                    </div>
+                    <div class="notification-time">
+                        <small class="text-muted">5 min</small>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <button class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-eye me-1"></i>View All Notifications
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

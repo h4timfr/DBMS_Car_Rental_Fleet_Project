@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Reservation - Car Rental Management{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card modern-card shadow-lg border-0">
+                <div class="card-header text-white border-0" style="background: linear-gradient(135deg, #dc3545, #c82333); padding: 1rem 1.5rem;">
+                    <h5 class="mb-0 d-flex align-items-center">
+                        <div class="icon-wrapper me-3" style="width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-edit"></i>
+                        </div>
+                        Edit Reservation (ID: {{ reservation.ReservationID }})
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="reservation_id" class="form-label">Reservation ID</label>
+                                <input type="number" class="form-control" id="reservation_id" value="{{ reservation.ReservationID }}" disabled>
+                                <small class="text-muted">Reservation ID cannot be changed</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="customer_id" class="form-label">Customer</label>
+                                <select class="form-control" id="customer_id" name="customer_id" required>
+                                    <option value="">Select Customer</option>
+                                    {% for customer in customers %}
+                                    <option value="{{ customer.CustomerID }}" {{ 'selected' if reservation.CustomerID == customer.CustomerID else '' }}>
+                                        {{ customer.CustomerName }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="car_id" class="form-label">Car</label>
+                                <select class="form-control" id="car_id" name="car_id" required>
+                                    <option value="">Select Car</option>
+                                    {% for car in cars %}
+                                    <option value="{{ car.CarID }}" {{ 'selected' if reservation.CarID == car.CarID else '' }}>
+                                        {{ car.CarName }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="reservation_date" class="form-label">Reservation Date</label>
+                                <input type="datetime-local" class="form-control" id="reservation_date" name="reservation_date" 
+                                       value="{{ reservation.ReservationDate.strftime('%Y-%m-%dT%H:%M') if reservation.ReservationDate else '' }}" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="pickup_location_id" class="form-label">Pickup Location</label>
+                                <select class="form-control" id="pickup_location_id" name="pickup_location_id" required>
+                                    <option value="">Select Pickup Location</option>
+                                    {% for location in locations %}
+                                    <option value="{{ location.LocationID }}" {{ 'selected' if reservation.PickupLocationID == location.LocationID else '' }}>
+                                        {{ location.Address }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="dropoff_location_id" class="form-label">Dropoff Location</label>
+                                <select class="form-control" id="dropoff_location_id" name="dropoff_location_id" required>
+                                    <option value="">Select Dropoff Location</option>
+                                    {% for location in locations %}
+                                    <option value="{{ location.LocationID }}" {{ 'selected' if reservation.DropoffLocationID == location.LocationID else '' }}>
+                                        {{ location.Address }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="status" class="form-label">
+                                <i class="fas fa-info-circle text-info"></i> Reservation Status
+                            </label>
+                            <select class="form-control status-select" id="status" name="status" required>
+                                <option value="">Select Status</option>
+                                <option value="Pending" {{ 'selected' if reservation.Status == 'Pending' else '' }}>
+                                    ⏳ Pending
+                                </option>
+                                <option value="Confirmed" {{ 'selected' if reservation.Status == 'Confirmed' else '' }}>
+                                    ✅ Confirmed
+                                </option>
+                                <option value="Cancelled" {{ 'selected' if reservation.Status == 'Cancelled' else '' }}>
+                                    ❌ Cancelled
+                                </option>
+                                <option value="Completed" {{ 'selected' if reservation.Status == 'Completed' else '' }}>
+                                    🏁 Completed
+                                </option>
+                            </select>
+                            <small class="text-muted">Current status: 
+                                <span class="badge bg-{{ 'success' if reservation.Status == 'Confirmed' 
+                                                        else 'warning' if reservation.Status == 'Pending' 
+                                                        else 'danger' if reservation.Status == 'Cancelled'
+                                                        else 'info' }}">
+                                    {{ reservation.Status }}
+                                </span>
+                            </small>
+                        </div>
+                        
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>Warning:</strong> Make sure all reservation details are correct before updating.
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('reservations') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to Reservations
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-save"></i> Update Reservation
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.modern-card {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.form-control {
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+    padding: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.status-select {
+    border: 2px solid #e1e5e9;
+    background: linear-gradient(45deg, #f8f9fa, #ffffff);
+}
+
+.status-select:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+.btn {
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.alert {
+    border-radius: 8px;
+    border: none;
+    background: rgba(255, 193, 7, 0.1);
+    border-left: 4px solid #ffc107;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    border: none;
+}
+
+.btn-danger:hover {
+    background: linear-gradient(135deg, #c82333, #a71e2a);
+}
+
+.badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+}
+
+/* Status options styling */
+option[value="Pending"] {
+    color: #ffc107;
+}
+
+option[value="Confirmed"] {
+    color: #28a745;
+}
+
+option[value="Cancelled"] {
+    color: #dc3545;
+}
+
+option[value="Completed"] {
+    color: #17a2b8;
+}
+</style>
+{% endblock %}

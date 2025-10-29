@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Add Rental - Car Rental Management{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card modern-card shadow-lg border-0">
+                <div class="card-header text-white border-0" style="background: linear-gradient(135deg, #17a2b8, #117a8b); padding: 1rem 1.5rem;">
+                    <h5 class="mb-0 d-flex align-items-center">
+                        <div class="icon-wrapper me-3" style="width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-calendar-plus"></i>
+                        </div>
+                        Create New Rental
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="rental_id" class="form-label">Rental ID</label>
+                                <input type="number" class="form-control" id="rental_id" name="rental_id" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="reservation_id" class="form-label">Reservation</label>
+                                <select class="form-control" id="reservation_id" name="reservation_id" required>
+                                    <option value="">Select Reservation</option>
+                                    {% for reservation in reservations %}
+                                    <option value="{{ reservation.ReservationID }}">
+                                        ID: {{ reservation.ReservationID }} - {{ reservation.CustomerName }} ({{ reservation.CarInfo }})
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="rental_start_date" class="form-label">Rental Start Date</label>
+                                <input type="datetime-local" class="form-control" id="rental_start_date" name="rental_start_date" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="rental_end_date" class="form-label">Rental End Date</label>
+                                <input type="datetime-local" class="form-control" id="rental_end_date" name="rental_end_date" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="total_cost" class="form-label">Total Cost (₹)</label>
+                            <input type="number" class="form-control" id="total_cost" name="total_cost" step="0.01" placeholder="0.00">
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to Dashboard
+                            </a>
+                            <button type="submit" class="btn btn-info">
+                                <i class="fas fa-save"></i> Create Rental
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.modern-card {
+    border-radius: 15px;
+    overflow: hidden;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Add Payment - Car Rental Management{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card modern-card shadow-lg border-0">
+                <div class="card-header text-white border-0" style="background: linear-gradient(135deg, #6c757d, #5a6268); padding: 1rem 1.5rem;">
+                    <h5 class="mb-0 d-flex align-items-center">
+                        <div class="icon-wrapper me-3" style="width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-money-bill"></i>
+                        </div>
+                        Record New Payment
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="payment_id" class="form-label">Payment ID</label>
+                                <input type="number" class="form-control" id="payment_id" name="payment_id" placeholder="e.g., 2001" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="rental_id" class="form-label">Rental</label>
+                                <select class="form-control" id="rental_id" name="rental_id" required>
+                                    <option value="">Select Rental</option>
+                                    {% for rental in rentals %}
+                                    <option value="{{ rental.RentalID }}">
+                                        Rental ID: {{ rental.RentalID }} - {{ rental.CustomerName }} (₹{{ "{:,.0f}".format(rental.TotalCost) if rental.TotalCost else '0' }})
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="payment_date" class="form-label">Payment Date</label>
+                                <input type="datetime-local" class="form-control" id="payment_date" name="payment_date" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="amount" class="form-label">Amount (₹)</label>
+                                <input type="number" class="form-control" id="amount" name="amount" step="0.01" placeholder="0.00" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="payment_method" class="form-label">Payment Method</label>
+                            <select class="form-control" id="payment_method" name="payment_method" required>
+                                <option value="">Select Payment Method</option>
+                                <option value="Cash">💵 Cash</option>
+                                <option value="Credit Card">💳 Credit Card</option>
+                                <option value="Debit Card">💳 Debit Card</option>
+                                <option value="UPI">📱 UPI</option>
+                                <option value="Net Banking">🏦 Net Banking</option>
+                                <option value="Cheque">📄 Cheque</option>
+                            </select>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>Note:</strong> Make sure the payment amount and method are accurate.
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to Dashboard
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Record Payment
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.modern-card {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.form-control {
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+    padding: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #6c757d;
+    box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.25);
+}
+
+.btn {
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.alert {
+    border-radius: 8px;
+    border: none;
+    background: rgba(23, 162, 184, 0.1);
+    border-left: 4px solid #17a2b8;
+}
+</style>
+{% endblock %}

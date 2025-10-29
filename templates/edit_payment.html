@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Payment - Car Rental Management{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card modern-card shadow-lg border-0">
+                <div class="card-header text-white border-0" style="background: linear-gradient(135deg, #28a745, #20c997); padding: 1rem 1.5rem;">
+                    <h5 class="mb-0 d-flex align-items-center">
+                        <div class="icon-wrapper me-3" style="width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-edit"></i>
+                        </div>
+                        {% if payment.PaymentMethod == 'Pending' %}
+                        Complete Payment (ID: {{ payment.PaymentID }})
+                        {% else %}
+                        Edit Payment (ID: {{ payment.PaymentID }})
+                        {% endif %}
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    {% if payment.PaymentMethod == 'Pending' %}
+                    <div class="alert alert-warning mb-4">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Action Required:</strong> This payment is pending. Please select the payment method and mark as completed.
+                    </div>
+                    {% endif %}
+                    
+                    <form method="POST">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="payment_id" class="form-label">Payment ID</label>
+                                <input type="number" class="form-control" id="payment_id" value="{{ payment.PaymentID }}" disabled>
+                                <small class="text-muted">Payment ID cannot be changed</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="rental_id" class="form-label">Rental ID</label>
+                                <input type="number" class="form-control" id="rental_id" name="rental_id" value="{{ payment.RentalID }}" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="payment_date" class="form-label">Payment Date</label>
+                                <input type="datetime-local" class="form-control" id="payment_date" name="payment_date" 
+                                       value="{{ payment.PaymentDate.strftime('%Y-%m-%dT%H:%M') if payment.PaymentDate else '' }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="amount" class="form-label">Amount (₹)</label>
+                                <input type="number" step="0.01" class="form-control" id="amount" name="amount" 
+                                       value="{{ payment.Amount }}" required style="font-size: 1.2rem; font-weight: bold;">
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="payment_method" class="form-label">
+                                    <i class="fas fa-credit-card"></i> Payment Method
+                                    {% if payment.PaymentMethod == 'Pending' %}
+                                    <span class="badge bg-warning text-dark ms-2">REQUIRED</span>
+                                    {% endif %}
+                                </label>
+                                <select class="form-control" id="payment_method" name="payment_method" required>
+                                    <option value="">-- Select Payment Method --</option>
+                                    <option value="Cash" {{ 'selected' if payment.PaymentMethod == 'Cash' else '' }}>💵 Cash</option>
+                                    <option value="CreditCard" {{ 'selected' if payment.PaymentMethod == 'CreditCard' else '' }}>💳 Credit Card</option>
+                                    <option value="DebitCard" {{ 'selected' if payment.PaymentMethod == 'DebitCard' else '' }}>💳 Debit Card</option>
+                                    <option value="Online" {{ 'selected' if payment.PaymentMethod == 'Online' else '' }}>🌐 Online Payment</option>
+                                    <option value="Pending" {{ 'selected' if payment.PaymentMethod == 'Pending' else '' }} disabled>⚠️ Pending (Choose above)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="status" class="form-label">
+                                    <i class="fas fa-check-circle"></i> Payment Status
+                                    {% if payment.status == 'Pending' %}
+                                    <span class="badge bg-danger ms-2">UPDATE REQUIRED</span>
+                                    {% endif %}
+                                </label>
+                                <select class="form-control" id="status" name="status" required>
+                                    <option value="Pending" {{ 'selected' if payment.status == 'Pending' else '' }}>
+                                        ⚠️ Pending
+                                    </option>
+                                    <option value="Completed" {{ 'selected' if payment.status == 'Completed' else '' }}>
+                                        ✅ Completed
+                                    </option>
+                                </select>
+                                <small class="text-muted">Mark as "Completed" once payment is received</small>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>Tip:</strong> Once you select a payment method and mark as "Completed", the payment will no longer appear as pending.
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('payments') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to Payments
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> 
+                                {% if payment.PaymentMethod == 'Pending' %}Complete Payment{% else %}Update Payment{% endif %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.modern-card {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.form-control {
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+    padding: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+select.form-control {
+    cursor: pointer;
+}
+
+.btn {
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    border: none;
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, #20c997, #17a2b8);
+}
+
+.alert {
+    border-radius: 10px;
+    border: none;
+}
+
+.alert-warning {
+    background: rgba(255, 193, 7, 0.15);
+    border-left: 4px solid #ffc107;
+    color: #856404;
+}
+
+.alert-info {
+    background: rgba(23, 162, 184, 0.1);
+    border-left: 4px solid #17a2b8;
+}
+
+.badge {
+    font-size: 0.75rem;
+    padding: 0.35rem 0.65rem;
+    border-radius: 6px;
+}
+</style>
+{% endblock %}

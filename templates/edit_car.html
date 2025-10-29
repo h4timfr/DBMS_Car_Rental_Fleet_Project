@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Car - Car Rental Management{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card modern-card shadow-lg border-0">
+                <div class="card-header text-white border-0" style="background: linear-gradient(135deg, #ffc107, #e0a800); padding: 1rem 1.5rem;">
+                    <h5 class="mb-0 d-flex align-items-center">
+                        <div class="icon-wrapper me-3" style="width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-car"></i>
+                        </div>
+                        Edit Vehicle (ID: {{ car.CarID }})
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="car_id" class="form-label">Car ID</label>
+                                <input type="number" class="form-control" id="car_id" value="{{ car.CarID }}" disabled>
+                                <small class="text-muted">Car ID cannot be changed</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="registration_number" class="form-label">Registration Number</label>
+                                <input type="text" class="form-control" id="registration_number" name="registration_number" value="{{ car.RegistrationNumber }}" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="make" class="form-label">Make</label>
+                                <input type="text" class="form-control" id="make" name="make" value="{{ car.Make }}" placeholder="e.g., Toyota, Honda" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="model" class="form-label">Model</label>
+                                <input type="text" class="form-control" id="model" name="model" value="{{ car.Model }}" placeholder="e.g., Camry, Civic" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="year" class="form-label">Year</label>
+                                <input type="number" class="form-control" id="year" name="year" value="{{ car.Year }}" min="1990" max="2025" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="car_type" class="form-label">Car Type</label>
+                                <select class="form-control" id="car_type" name="car_type" required>
+                                    <option value="">Select Type</option>
+                                    <option value="Sedan" {{ 'selected' if car.CarType == 'Sedan' else '' }}>Sedan</option>
+                                    <option value="SUV" {{ 'selected' if car.CarType == 'SUV' else '' }}>SUV</option>
+                                    <option value="Hatchback" {{ 'selected' if car.CarType == 'Hatchback' else '' }}>Hatchback</option>
+                                    <option value="Convertible" {{ 'selected' if car.CarType == 'Convertible' else '' }}>Convertible</option>
+                                    <option value="Truck" {{ 'selected' if car.CarType == 'Truck' else '' }}>Truck</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="branch_id" class="form-label">Branch</label>
+                                <select class="form-control" id="branch_id" name="branch_id" required>
+                                    <option value="">Select Branch</option>
+                                    {% for branch in branches %}
+                                    <option value="{{ branch.BranchId }}" {{ 'selected' if car.BranchID == branch.BranchId else '' }}>
+                                        {{ branch.BranchName }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- NEW AVAILABILITY STATUS SECTION -->
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="availability_status" class="form-label">
+                                    <i class="fas fa-info-circle text-info"></i> Availability Status
+                                </label>
+                                <select class="form-control status-select" id="availability_status" name="availability_status" required>
+                                    <option value="">Select Status</option>
+                                    <option value="Available" {{ 'selected' if car.AvailabilityStatus == 'Available' else '' }}>
+                                        ✅ Available
+                                    </option>
+                                    <option value="Rented" {{ 'selected' if car.AvailabilityStatus == 'Rented' else '' }}>
+                                        🚗 Currently Rented
+                                    </option>
+                                    <option value="Maintenance" {{ 'selected' if car.AvailabilityStatus == 'Maintenance' else '' }}>
+                                        🔧 Under Maintenance
+                                    </option>
+                                    <option value="Unavailable" {{ 'selected' if car.AvailabilityStatus == 'Unavailable' else '' }}>
+                                        ❌ Unavailable
+                                    </option>
+                                </select>
+                                <small class="text-muted">Current status: 
+                                    <span class="badge bg-{{ 'success' if car.AvailabilityStatus == 'Available' 
+                                                            else 'danger' if car.AvailabilityStatus == 'Rented' 
+                                                            else 'warning' if car.AvailabilityStatus == 'Maintenance' 
+                                                            else 'secondary' }}">
+                                        {{ car.AvailabilityStatus }}
+                                    </span>
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>Warning:</strong> Changing the status affects car availability for rentals.
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('cars') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to Cars
+                            </a>
+                            <button type="submit" class="btn btn-warning">
+                                <i class="fas fa-save"></i> Update Vehicle
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.modern-card {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.form-control {
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+    padding: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #ffc107;
+    box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+}
+
+.status-select {
+    border: 2px solid #e1e5e9;
+    background: linear-gradient(45deg, #f8f9fa, #ffffff);
+}
+
+.status-select:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+.btn {
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.alert {
+    border-radius: 8px;
+    border: none;
+    background: rgba(255, 193, 7, 0.1);
+    border-left: 4px solid #ffc107;
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, #ffc107, #e0a800);
+    border: none;
+    color: #212529;
+}
+
+.btn-warning:hover {
+    background: linear-gradient(135deg, #e0a800, #c69500);
+}
+
+.badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+}
+
+/* Status-specific styling */
+option[value="Available"] {
+    color: #28a745;
+}
+
+option[value="Rented"] {
+    color: #dc3545;
+}
+
+option[value="Maintenance"] {
+    color: #ffc107;
+}
+
+option[value="Unavailable"] {
+    color: #6c757d;
+}
+</style>
+{% endblock %}

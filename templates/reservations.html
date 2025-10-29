@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}Reservations - Car Rental Management{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-calendar text-danger"></i> Reservation Management</h2>
+        <a href="{{ url_for('add_reservation') }}" class="btn btn-danger">
+            <i class="fas fa-plus"></i> Add New Reservation
+        </a>
+    </div>
+
+    <div class="card modern-card shadow-lg border-0">
+        <div class="card-header text-white border-0" style="background: linear-gradient(135deg, #dc3545, #c82333); padding: 1rem 1.5rem;">
+            <h5 class="mb-0">
+                <i class="fas fa-list"></i> All Reservations 
+                {% if reservations %}({{ reservations|length }}){% endif %}
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            {% if reservations %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Reservation ID</th>
+                            <th>Customer</th>
+                            <th>Car</th>
+                            <th>Reservation Date</th>
+                            <th>Pickup Location</th>
+                            <th>Dropoff Location</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for reservation in reservations %}
+                        <tr>
+                            <td><span class="badge bg-danger">{{ reservation.ReservationID }}</span></td>
+                            <td><strong>{{ reservation.CustomerName or 'Unknown' }}</strong></td>
+                            <td>{{ reservation.CarInfo or 'No Car' }}</td>
+                            <td>{{ reservation.ReservationDate.strftime('%Y-%m-%d') if reservation.ReservationDate else 'N/A' }}</td>
+                            <td>{{ reservation.PickupLocationID or 'N/A' }}</td>
+                            <td>{{ reservation.DropoffLocationID or 'N/A' }}</td>
+                            <td>
+                                <span class="badge bg-{{ 'success' if reservation.Status == 'Confirmed' else 'warning' if reservation.Status == 'Pending' else 'secondary' }}">
+                                    {{ reservation.Status or 'Unknown' }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('edit_reservation', reservation_id=reservation.ReservationID) }}" class="btn btn-sm btn-outline-warning me-2">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                <a href="{{ url_for('delete_reservation', reservation_id=reservation.ReservationID) }}" 
+                                   class="btn btn-sm btn-outline-danger" 
+                                   onclick="return confirm('Are you sure you want to delete this reservation?')">
+                                    <i class="fas fa-trash"></i> Delete
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-calendar fa-4x text-muted mb-3"></i>
+                <h5 class="text-muted">No reservations found</h5>
+                <p class="text-muted">Start by creating your first reservation.</p>
+                <a href="{{ url_for('add_reservation') }}" class="btn btn-danger">
+                    <i class="fas fa-plus"></i> Add First Reservation
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+}
+
+.modern-card {
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.modern-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15) !important;
+}
+
+.table th {
+    font-weight: 600;
+    color: #2c3e50;
+    border-bottom: 2px solid #e9ecef;
+    background: #f8f9fa !important;
+    padding: 1rem 0.75rem;
+}
+
+.table td {
+    vertical-align: middle;
+    padding: 1rem 0.75rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(220, 53, 69, 0.05);
+    transition: all 0.3s ease;
+}
+
+.badge {
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-sm {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    border-radius: 6px;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    border: none;
+    padding: 0.75rem 1.5rem;
+}
+
+.btn-danger:hover {
+    background: linear-gradient(135deg, #c82333, #a71e2a);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.8rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .table td {
+        padding: 0.5rem 0.25rem;
+        font-size: 0.875rem;
+    }
+}
+
+/* Animation */
+.table tbody tr {
+    animation: fadeInUp 0.5s ease forwards;
+}
+
+.table tbody tr:nth-child(1) { animation-delay: 0.1s; }
+.table tbody tr:nth-child(2) { animation-delay: 0.2s; }
+.table tbody tr:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
+{% endblock %}

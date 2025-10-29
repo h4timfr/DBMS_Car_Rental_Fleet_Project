@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+
+{% block title %}Add Reservation - Car Rental Management{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card modern-card shadow-lg border-0">
+                <div class="card-header text-white border-0" style="background: linear-gradient(135deg, #dc3545, #c82333); padding: 1rem 1.5rem;">
+                    <h5 class="mb-0 d-flex align-items-center">
+                        <div class="icon-wrapper me-3" style="width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-calendar-plus"></i>
+                        </div>
+                        Create New Reservation
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="reservation_id" class="form-label">Reservation ID</label>
+                                <input type="number" class="form-control" id="reservation_id" name="reservation_id" placeholder="e.g., 3001" required>
+                                <small class="text-muted">Enter a unique reservation ID</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="customer_id" class="form-label">
+                                    <i class="fas fa-user"></i> Customer
+                                </label>
+                                <select class="form-control" id="customer_id" name="customer_id" required>
+                                    <option value="">-- Select Customer --</option>
+                                    {% if customers %}
+                                        {% for customer in customers %}
+                                        <option value="{{ customer.CustomerID }}">{{ customer.CustomerName }}</option>
+                                        {% endfor %}
+                                    {% else %}
+                                        <option value="" disabled>No customers available</option>
+                                    {% endif %}
+                                </select>
+                                {% if not customers %}
+                                <small class="text-danger">No customers found. <a href="{{ url_for('add_customer') }}">Add a customer first</a></small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="car_id" class="form-label">
+                                    <i class="fas fa-car"></i> Available Car
+                                </label>
+                                <select class="form-control" id="car_id" name="car_id" required>
+                                    <option value="">-- Select Car --</option>
+                                    {% if cars %}
+                                        {% for car in cars %}
+                                        <option value="{{ car.CarID }}">{{ car.CarName }}</option>
+                                        {% endfor %}
+                                    {% else %}
+                                        <option value="" disabled>No available cars</option>
+                                    {% endif %}
+                                </select>
+                                {% if not cars %}
+                                <small class="text-danger">No available cars. <a href="{{ url_for('add_car') }}">Add a car first</a></small>
+                                {% else %}
+                                <small class="text-muted">Only available cars are shown</small>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="reservation_date" class="form-label">
+                                    <i class="fas fa-calendar"></i> Reservation Date & Time
+                                </label>
+                                <input type="datetime-local" class="form-control" id="reservation_date" name="reservation_date" required>
+                            </div>
+                        </div>
+                        
+                        <!-- LOCATION SECTION -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="pickup_location_id" class="form-label">
+                                    <i class="fas fa-map-marker-alt text-success"></i> Pickup Location
+                                </label>
+                                <select class="form-control location-select" id="pickup_location_id" name="pickup_location_id" required>
+                                    <option value="">-- Select Pickup Location --</option>
+                                    {% if pickup_locations %}
+                                        {% for location in pickup_locations %}
+                                        <option value="{{ location.LocationID }}">📍 {{ location.LocationName }}</option>
+                                        {% endfor %}
+                                    {% else %}
+                                        <option value="" disabled>No pickup locations available</option>
+                                    {% endif %}
+                                </select>
+                                {% if not pickup_locations %}
+                                <small class="text-danger">
+                                    <i class="fas fa-exclamation-triangle"></i> 
+                                    <a href="{{ url_for('add_location') }}" class="text-danger">Add a pickup location first</a>
+                                </small>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="dropoff_location_id" class="form-label">
+                                    <i class="fas fa-map-marker-alt text-danger"></i> Dropoff Location
+                                </label>
+                                <select class="form-control location-select" id="dropoff_location_id" name="dropoff_location_id" required>
+                                    <option value="">-- Select Dropoff Location --</option>
+                                    {% if dropoff_locations %}
+                                        {% for location in dropoff_locations %}
+                                        <option value="{{ location.LocationID }}">📍 {{ location.LocationName }}</option>
+                                        {% endfor %}
+                                    {% else %}
+                                        <option value="" disabled>No dropoff locations available</option>
+                                    {% endif %}
+                                </select>
+                                {% if not dropoff_locations %}
+                                <small class="text-danger">
+                                    <i class="fas fa-exclamation-triangle"></i> 
+                                    <a href="{{ url_for('add_location') }}" class="text-danger">Add a dropoff location first</a>
+                                </small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>Note:</strong> Make sure the reservation details are accurate. The reservation will be automatically set as "Confirmed".
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('reservations') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to Reservations
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-save"></i> Create Reservation
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.modern-card {
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.modern-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15) !important;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.form-control {
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+    padding: 0.75rem;
+    transition: all 0.3s ease;
+    background: #ffffff;
+}
+
+.form-control:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+    transform: scale(1.02);
+}
+
+.location-select {
+    border: 2px solid #e1e5e9;
+    background: linear-gradient(45deg, #fff, #fafafa);
+}
+
+.location-select:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+.location-select option {
+    padding: 10px;
+}
+
+.btn {
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.alert {
+    border-radius: 10px;
+    border: none;
+    background: rgba(23, 162, 184, 0.1);
+    border-left: 4px solid #17a2b8;
+    backdrop-filter: blur(10px);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    border: none;
+    color: white;
+    font-weight: 600;
+}
+
+.btn-danger:hover {
+    background: linear-gradient(135deg, #c82333, #a71e2a);
+    color: white;
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #6c757d, #5a6268);
+    border: none;
+}
+
+.btn-secondary:hover {
+    background: linear-gradient(135deg, #5a6268, #495057);
+}
+
+.text-danger a {
+    text-decoration: underline;
+    font-weight: 600;
+}
+
+.text-danger a:hover {
+    color: #bd2130 !important;
+}
+</style>
+{% endblock %}

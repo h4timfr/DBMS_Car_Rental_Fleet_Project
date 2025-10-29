@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Rental - Car Rental Management{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card modern-card shadow-lg border-0">
+                <div class="card-header text-white border-0" style="background: linear-gradient(135deg, #28a745, #20c997); padding: 1rem 1.5rem;">
+                    <h5 class="mb-0 d-flex align-items-center">
+                        <div class="icon-wrapper me-3" style="width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-edit"></i>
+                        </div>
+                        Edit Rental (ID: {{ rental.RentalID }})
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" id="rentalForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="rental_id" class="form-label">Rental ID</label>
+                                <input type="number" class="form-control" id="rental_id" value="{{ rental.RentalID }}" disabled>
+                                <small class="text-muted">Rental ID cannot be changed</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="reservation_id" class="form-label">Reservation</label>
+                                <select class="form-control" id="reservation_id" name="reservation_id" required onchange="updatePrice()">
+                                    <option value="">Select Reservation</option>
+                                    {% for reservation in reservations %}
+                                    <option value="{{ reservation.ReservationID }}" 
+                                            {{ 'selected' if rental.ReservationID == reservation.ReservationID else '' }}
+                                            data-car-type="{{ reservation.CarInfo.split('(')[1].split(')')[0] if '(' in reservation.CarInfo else 'Unknown' }}">
+                                        {{ reservation.CustomerName }} - {{ reservation.CarInfo }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="rental_start_date" class="form-label">Rental Start Date</label>
+                                <input type="datetime-local" class="form-control" id="rental_start_date" name="rental_start_date" 
+                                       value="{{ rental.RentalStartDate.strftime('%Y-%m-%dT%H:%M') if rental.RentalStartDate else '' }}" 
+                                       required onchange="updatePrice()">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="rental_end_date" class="form-label">Rental End Date</label>
+                                <input type="datetime-local" class="form-control" id="rental_end_date" name="rental_end_date" 
+                                       value="{{ rental.RentalEndDate.strftime('%Y-%m-%dT%H:%M') if rental.RentalEndDate else '' }}" 
+                                       required onchange="updatePrice()">
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="actual_return_date" class="form-label">Actual Return Date (Optional)</label>
+                                <input type="datetime-local" class="form-control" id="actual_return_date" name="actual_return_date" 
+                                       value="{{ rental.ActualReturnDate.strftime('%Y-%m-%dT%H:%M') if rental.ActualReturnDate else '' }}">
+                                <small class="text-muted">Leave empty if car not yet returned</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="total_cost" class="form-label">Current Total Cost</label>
+                                <input type="number" class="form-control" id="total_cost" name="total_cost" 
+                                       value="{{ rental.TotalCost }}" readonly style="background: #e9ecef; font-weight: bold; font-size: 1.2rem;">
+                            </div>
+                        </div>
+                        
+                        <!-- PRICE BREAKDOWN SECTION -->
+                        {% if price_breakdown %}
+                        <div class="alert alert-success mb-4">
+                            <h5 class="mb-3"><i class="fas fa-receipt"></i> Current Price Breakdown</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="mb-2"><strong>Base Price:</strong> ₹{{ "%.2f"|format(price_breakdown.base_price) }} x {{ price_breakdown.duration }} days</p>
+                                    <p class="mb-2"><strong>Season:</strong> {{ price_breakdown.season_name }} ({{ price_breakdown.season_multiplier }}x multiplier)</p>
+                                    <p class="mb-2"><strong>Availability:</strong> {{ price_breakdown.availability_status }} ({{ price_breakdown.available_cars }} cars available)</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="mb-2"><strong>Duration Discount:</strong> {{ price_breakdown.duration_discount_name }} (-₹{{ "%.2f"|format(price_breakdown.duration_discount_amount) }})</p>
+                                    {% if price_breakdown.early_booking_discount > 0 %}
+                                    <p class="mb-2"><strong>Early Booking:</strong> {{ price_breakdown.early_booking_name }} (-₹{{ "%.2f"|format(price_breakdown.early_booking_amount) }})</p>
+                                    {% endif %}
+                                    {% if price_breakdown.weekend_surcharge_percent > 0 %}
+                                    <p class="mb-2"><strong>Weekend:</strong> {{ price_breakdown.weekend_name }} (+₹{{ "%.2f"|format(price_breakdown.weekend_surcharge_amount) }})</p>
+                                    {% endif %}
+                                    <hr>
+                                    <p class="mb-0"><strong>Total Savings:</strong> <span class="text-success">₹{{ "%.2f"|format(price_breakdown.savings) }}</span></p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- DYNAMIC PRICE PREVIEW -->
+                        <div id="price_preview" class="mb-3"></div>
+                        
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>Note:</strong> Changing dates will automatically recalculate the price based on dynamic pricing rules.
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('rentals') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to Rentals
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Update Rental
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function updatePrice() {
+    const reservationSelect = document.getElementById('reservation_id');
+    const startDate = document.getElementById('rental_start_date').value;
+    const endDate = document.getElementById('rental_end_date').value;
+    
+    if (!reservationSelect.value || !startDate || !endDate) return;
+    
+    // Extract car type from selected option
+    const selectedOption = reservationSelect.options[reservationSelect.selectedIndex];
+    const carType = selectedOption.getAttribute('data-car-type');
+    
+    if (!carType || carType === 'Unknown') {
+        console.error('Car type not found');
+        return;
+    }
+    
+    // Call API to calculate new price
+    fetch('/api/calculate_price', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            car_type: carType,
+            start_date: startDate,
+            end_date: endDate
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Update total cost field
+        document.getElementById('total_cost').value = data.total_price.toFixed(2);
+        
+        // Show detailed breakdown
+        document.getElementById('price_preview').innerHTML = `
+            <div class="alert alert-info">
+                <h5><i class="fas fa-calculator"></i> New Price Calculation</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="mb-2"><strong>Duration:</strong> ${data.duration} days</p>
+                        <p class="mb-2"><strong>Base Price:</strong> ₹${data.base_price.toFixed(2)} x ${data.duration} = ₹${data.base_subtotal.toFixed(2)}</p>
+                        <p class="mb-2"><strong>Season:</strong> ${data.season_name} (${data.season_multiplier}x)</p>
+                        <p class="mb-2"><strong>Availability:</strong> ${data.availability_status} (${data.availability_multiplier}x)</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="mb-2"><strong>Subtotal:</strong> ₹${data.subtotal_after_multipliers.toFixed(2)}</p>
+                        <p class="mb-2"><strong>Duration Discount:</strong> ${data.duration_discount_name} (-₹${data.duration_discount_amount.toFixed(2)})</p>
+                        ${data.early_booking_discount > 0 ? `<p class="mb-2"><strong>Early Booking:</strong> ${data.early_booking_name} (-₹${data.early_booking_amount.toFixed(2)})</p>` : ''}
+                        ${data.weekend_surcharge_percent > 0 ? `<p class="mb-2"><strong>Weekend Surcharge:</strong> +₹${data.weekend_surcharge_amount.toFixed(2)}</p>` : ''}
+                        <hr>
+                        <h5 class="mb-0"><strong>New Total:</strong> ₹${data.total_price.toFixed(2)}</h5>
+                        <p class="text-success mb-0">You save ₹${data.savings.toFixed(2)}!</p>
+                    </div>
+                </div>
+            </div>
+        `;
+    })
+    .catch(error => {
+        console.error('Error calculating price:', error);
+    });
+}
+
+// Initial price calculation on page load
+document.addEventListener('DOMContentLoaded', updatePrice);
+</script>
+
+<style>
+.modern-card {
+    border-radius: 15px;
+    overflow: hidden;
+}
+.form-label {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+.form-control {
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+    padding: 0.75rem;
+    transition: all 0.3s ease;
+}
+.form-control:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+.btn {
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.btn-success {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    border: none;
+}
+.alert {
+    border-radius: 10px;
+    border: none;
+}
+.alert-success {
+    background: rgba(40, 167, 69, 0.1);
+    border-left: 4px solid #28a745;
+}
+.alert-info {
+    background: rgba(23, 162, 184, 0.1);
+    border-left: 4px solid #17a2b8;
+}
+.alert-warning {
+    background: rgba(255, 193, 7, 0.1);
+    border-left: 4px solid #ffc107;
+}
+</style>
+{% endblock %}

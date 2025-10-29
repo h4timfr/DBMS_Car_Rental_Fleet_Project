@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Branch Locations Map - Car Rental Management{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4 px-4">
+    <div class="row mb-3">
+        <div class="col-12">
+            <h2><i class="fas fa-map-marked-alt text-primary"></i> Branch Locations Map</h2>
+            <p class="text-muted">View all our car rental locations across India</p>
+        </div>
+    </div>
+    
+    <div class="card modern-card shadow-lg border-0">
+        <div class="card-header text-white border-0" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 1rem 1.5rem;">
+            <h5 class="mb-0">
+                <i class="fas fa-globe"></i> Our Locations Across India
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <!-- Embedded Google Map focused on India -->
+            <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15281602.03696777!2d73.72787789999999!3d20.5937!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x30635ff06b92b791%3A0xd78c4fa1854213a6!2sIndia!5e0!3m2!1sen!2sin!4v1698000000000!5m2!1sen!2sin" 
+                width="100%" 
+                height="600" 
+                style="border:0;" 
+                allowfullscreen="" 
+                loading="lazy" 
+                referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
+        </div>
+        <div class="card-footer bg-light">
+            <div class="row">
+                <div class="col-md-8">
+                    <p class="mb-0 text-muted">
+                        <i class="fas fa-info-circle"></i> 
+                        <strong>Note:</strong> This map shows India's general location. You can zoom in to find specific cities and locations.
+                    </p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <a href="https://www.google.com/maps/@20.5937,78.9629,5z" target="_blank" class="btn btn-primary btn-sm">
+                        <i class="fas fa-external-link-alt"></i> Open in Google Maps
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Location Info Cards -->
+    <div class="row mt-4">
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <i class="fas fa-map-pin fa-2x text-primary mb-3"></i>
+                    <h5>Find Nearest Branch</h5>
+                    <p class="text-muted">Use the map to locate the nearest rental location to you</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <i class="fas fa-route fa-2x text-success mb-3"></i>
+                    <h5>Plan Your Journey</h5>
+                    <p class="text-muted">Check routes and distances between locations</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <i class="fas fa-car fa-2x text-info mb-3"></i>
+                    <h5>Book & Pickup</h5>
+                    <p class="text-muted">Reserve your car from any of our locations</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-3 mb-4">
+        <div class="col-12">
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Home
+            </a>
+            <a href="{{ url_for('locations') }}" class="btn btn-primary ms-2">
+                <i class="fas fa-list"></i> View All Locations
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+}
+
+.modern-card {
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.modern-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15) !important;
+}
+
+.card {
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important;
+}
+
+.btn {
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+</style>
+{% endblock %}
